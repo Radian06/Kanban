@@ -1,0 +1,65 @@
+/* 칸반 페이지 전용 스타일 */
+.kanban-board {
+  width: 76vw;
+  height: 70vh;
+  padding: 2vh 2vw;
+  margin: 4vh auto;
+
+  display: flex;
+  justify-content: space-between;
+
+  background-color: beige;
+}
+
+/* Column 스타일 */
+.kanban-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: bisque;
+}
+
+.kanban-column__title {
+  width: 12vw;
+  height: 10vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 2.5vh;
+  font-weight: bold;
+}
+
+/* 기본: 모든 컬럼 리스트는 1열(세로) */
+.kanban-column__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+}
+
+/* doing 컬럼 */
+.kanban-column[data-status="doing"] .kanban-column__list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2vh;
+  align-items: start;
+}
+
+/* TaskCard 스타일 */
+.task-card {
+  width: 10vw;
+  height: 8vh;
+  margin: 0 1.2vw;
+  padding: 1vh 1vw;
+
+  display: flex;
+  align-items: center;
+
+  background-color: antiquewhite;
+  border-radius: 2vh;
+}
+
+.task-card:hover {
+  background-color: aquamarine;
+}
