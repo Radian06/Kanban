@@ -1,4 +1,3 @@
-// src/components/Column.js
 import { state, moveTask } from "../state/store.js";
 import { renderTaskCard } from "./TaskCard.js";
 
@@ -26,52 +25,30 @@ export function renderColumn(status, label) {
   const list = document.createElement("div");
   list.className = "kanban-column__list";
 
-  // ✅ lane 3개 만들기
-  const lanes = Array.from({ length: 3 }, (_, laneIndex) => {
-    const lane = document.createElement("div");
-    lane.className = "kanban-lane";
-    lane.dataset.lane = String(laneIndex);
-
-    lane.addEventListener("dragover", (e) => {
-      e.preventDefault();               // drop 허용
-      e.dataTransfer.dropEffect = "move";
-      lane.classList.add("drag-over");
-    });
-
-    lane.addEventListener("dragleave", () => {
-      lane.classList.remove("drag-over");
-    });
-
-    lane.addEventListener("drop", (e) => {
-      e.preventDefault();
-      lane.classList.remove("drag-over");
-
-      const taskId = e.dataTransfer.getData("text/plain");
-      if (!taskId) return;
-
-      const insertIndex = getInsertIndex(lane, e.clientY);
-      moveTask(taskId, status, laneIndex, insertIndex);
-    });
-
-    list.appendChild(lane);
-    return lane;
+  // drop zone
+  list.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
   });
 
-  // status별 task를 lane+order로 정렬해서 넣기
+  list.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const taskId = e.dataTransfer.getData("text/plain");
+    if (!taskId) return;
+
+    const insertIndex = getInsertIndex(list, e.clientY);
+    moveTask(taskId, status, insertIndex);
+  });
+
+  // order 기준 렌더
   state.tasks
-    .filter((t) => t.status === status)
-    .sort((a, b) => {
-      if (a.lane !== b.lane) return a.lane - b.lane;
-      return a.order - b.order;
-    })
-    .forEach((t) => {
-      const laneIndex = Number.isInteger(t.lane) ? t.lane : 0;
-      const safeLane = Math.max(0, Math.min(2, laneIndex));
-      lanes[safeLane].appendChild(renderTaskCard(t));
+    .filter(t => t.status === status)
+    .sort((a, b) => a.order - b.order)
+    .forEach(t => {
+      list.appendChild(renderTaskCard(t));
     });
 
   column.appendChild(header);
   column.appendChild(list);
-
   return column;
 }

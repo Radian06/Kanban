@@ -13,6 +13,8 @@
 
 /* Column 스타일 */
 .kanban-column {
+  height: 70vh;
+  
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,9 +35,13 @@
 
 /* 기본: 모든 컬럼 리스트는 1열(세로) */
 .kanban-column__list {
+  height: 60vh;
+
   display: flex;
   flex-direction: column;
   gap: 2vh;
+
+  background-color: #454545;
 }
 
 /* doing 컬럼 */
