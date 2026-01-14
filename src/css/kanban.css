@@ -46,6 +46,20 @@
   align-items: start;
 }
 
+.kanban-lane {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+  min-height: 1vh;
+
+  background-color: azure;
+}
+
+.kanban-lane.drag-over {
+  outline: 2px dashed rgba(255, 255, 255, 0.5);
+  outline-offset: 6px;
+}
+
 /* TaskCard 스타일 */
 .task-card {
   width: 10vw;

@@ -1,5 +1,18 @@
+// src/components/Column.js
 import { state, moveTask } from "../state/store.js";
 import { renderTaskCard } from "./TaskCard.js";
+
+function getInsertIndex(laneEl, clientY) {
+  // lane 안의 카드들 기준으로 "어디에 끼워 넣을지" 계산
+  const cards = Array.from(laneEl.querySelectorAll(".task-card"));
+
+  for (let i = 0; i < cards.length; i++) {
+    const rect = cards[i].getBoundingClientRect();
+    const midY = rect.top + rect.height / 2;
+    if (clientY < midY) return i; // i번째 카드 '위'로 삽입
+  }
+  return cards.length; // 맨 아래로
+}
 
 export function renderColumn(status, label) {
   const column = document.createElement("section");
@@ -13,25 +26,49 @@ export function renderColumn(status, label) {
   const list = document.createElement("div");
   list.className = "kanban-column__list";
 
-  state.tasks
-    .filter((t) => t.status === status)
-    .forEach((t) => list.appendChild(renderTaskCard(t)));
+  // ✅ lane 3개 만들기
+  const lanes = Array.from({ length: 3 }, (_, laneIndex) => {
+    const lane = document.createElement("div");
+    lane.className = "kanban-lane";
+    lane.dataset.lane = String(laneIndex);
 
-  // drop 허용
-  column.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
+    lane.addEventListener("dragover", (e) => {
+      e.preventDefault();               // drop 허용
+      e.dataTransfer.dropEffect = "move";
+      lane.classList.add("drag-over");
+    });
+
+    lane.addEventListener("dragleave", () => {
+      lane.classList.remove("drag-over");
+    });
+
+    lane.addEventListener("drop", (e) => {
+      e.preventDefault();
+      lane.classList.remove("drag-over");
+
+      const taskId = e.dataTransfer.getData("text/plain");
+      if (!taskId) return;
+
+      const insertIndex = getInsertIndex(lane, e.clientY);
+      moveTask(taskId, status, laneIndex, insertIndex);
+    });
+
+    list.appendChild(lane);
+    return lane;
   });
 
-  // drop 처리
-  column.addEventListener("drop", (e) => {
-    e.preventDefault();
-
-    const taskId = e.dataTransfer.getData("text/plain");
-    if (!taskId) return;
-
-    moveTask(taskId, status);
-  })
+  // status별 task를 lane+order로 정렬해서 넣기
+  state.tasks
+    .filter((t) => t.status === status)
+    .sort((a, b) => {
+      if (a.lane !== b.lane) return a.lane - b.lane;
+      return a.order - b.order;
+    })
+    .forEach((t) => {
+      const laneIndex = Number.isInteger(t.lane) ? t.lane : 0;
+      const safeLane = Math.max(0, Math.min(2, laneIndex));
+      lanes[safeLane].appendChild(renderTaskCard(t));
+    });
 
   column.appendChild(header);
   column.appendChild(list);
