@@ -1,4 +1,3 @@
-// src/components/Column.js
 import { state, moveTask } from "../state/store.js";
 import { renderTaskCard } from "./TaskCard.js";
 
@@ -13,27 +12,29 @@ function getInsertIndex(listEl, clientY) {
   return cards.length;
 }
 
-function attachDrop(listEl, status, lane) {
-  listEl.addEventListener("dragover", (e) => {
+// dropEl: 실제 드롭/스크롤 되는 영역
+// boxEl: 테두리(드래그 오버 표시) 붙일 박스(기본 dropEl)
+function attachDrop(dropEl, status, lane, boxEl = dropEl) {
+  dropEl.addEventListener("dragover", (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    listEl.classList.add("drag-over");
+    boxEl.classList.add("drag-over");
   });
 
-  listEl.addEventListener("dragleave", () => {
-    listEl.classList.remove("drag-over");
+  dropEl.addEventListener("dragleave", () => {
+    boxEl.classList.remove("drag-over");
   });
 
-  listEl.addEventListener("drop", (e) => {
+  dropEl.addEventListener("drop", (e) => {
     e.preventDefault();
-    listEl.classList.remove("drag-over");
+    boxEl.classList.remove("drag-over");
 
     const taskId = e.dataTransfer.getData("text/plain");
     if (!taskId) return;
 
-    const insertIndex = getInsertIndex(listEl, e.clientY);
+    const insertIndex = getInsertIndex(dropEl, e.clientY);
 
-    // ✅ doing이면 lane 전달, 아니면 lane 없이
+    // doing이면 lane 전달, 아니면 lane 없이
     if (status === "doing") moveTask(taskId, "doing", insertIndex, lane);
     else moveTask(taskId, status, insertIndex);
   });
@@ -50,23 +51,28 @@ export function renderColumn(status, label) {
 
   column.appendChild(header);
 
-  // ✅ TODO / DONE: 기존 1개 list
+  // TODO / DONE
   if (status !== "doing") {
     const list = document.createElement("div");
     list.className = "kanban-column__list";
 
-    attachDrop(list, status);
+    // 카드만 스크롤되는 영역(패딩은 list가 유지)
+    const scrollArea = document.createElement("div");
+    scrollArea.className = "kanban-column__scrollArea";
+
+    attachDrop(scrollArea, status, undefined, list);
 
     state.tasks
       .filter((t) => t.status === status)
       .sort((a, b) => a.order - b.order)
-      .forEach((t) => list.appendChild(renderTaskCard(t)));
+      .forEach((t) => scrollArea.appendChild(renderTaskCard(t)));
 
+    list.appendChild(scrollArea);
     column.appendChild(list);
     return column;
   }
 
-  // ✅ DOING: doingBox + list 3개
+  // DOING
   const doingBox = document.createElement("div");
   doingBox.className = "kanban-column__doingBox";
 
@@ -75,10 +81,16 @@ export function renderColumn(status, label) {
     list.className = "kanban-column__list";
     list.dataset.lane = String(lane);
 
-    attachDrop(list, "doing", lane);
+    // 카드만 스크롤되는 영역(패딩은 list가 유지)
+    const scrollArea = document.createElement("div");
+    scrollArea.className = "kanban-column__scrollArea";
 
+    attachDrop(scrollArea, "doing", lane, list);
+
+    list.appendChild(scrollArea);
     doingBox.appendChild(list);
-    return list;
+
+    return { list, scrollArea };
   });
 
   state.tasks
@@ -91,7 +103,7 @@ export function renderColumn(status, label) {
     })
     .forEach((t) => {
       const lane = Math.max(0, Math.min(2, t.lane ?? 0));
-      lists[lane].appendChild(renderTaskCard(t));
+      lists[lane].scrollArea.appendChild(renderTaskCard(t));
     });
 
   column.appendChild(doingBox);

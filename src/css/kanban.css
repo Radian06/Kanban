@@ -85,6 +85,27 @@
   outline-offset: 0.5vh;
 }
 
+.kanban-column__scrollArea {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+
+  /* 스크롤 */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.kanban-column__scrollArea::-webkit-scrollbar {
+  display: none;
+}
+
 /* TaskCard 스타일 */
 .task-card {
   width: 10vw;

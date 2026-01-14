@@ -1,4 +1,3 @@
-// src/state/store.js
 export const state = {
   tasks: [
     { id: 1, title: "1 UI 만들기", status: "todo", order: 0 },
@@ -26,7 +25,7 @@ function normalizeGroup(status, lane) {
 }
 
 /**
- * ✅ moveTask(taskId, newStatus, insertIndex, newLane?)
+ * moveTask(taskId, newStatus, insertIndex, newLane?)
  * - todo/done: newLane 무시
  * - doing: newLane 필수(0~2). 없으면 기존 lane 유지(없으면 0)
  */
