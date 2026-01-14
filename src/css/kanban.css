@@ -14,7 +14,7 @@
 /* Column 스타일 */
 .kanban-column {
   height: 70vh;
-  
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,9 +33,10 @@
   font-weight: bold;
 }
 
-/* 기본: 모든 컬럼 리스트는 1열(세로) */
+/* 기본 컬럼*/
 .kanban-column__list {
-  height: 60vh;
+  height: 56vh;
+  padding: 2vh 0;
 
   display: flex;
   flex-direction: column;
@@ -44,12 +45,31 @@
   background-color: #454545;
 }
 
-/* doing 컬럼 */
-.kanban-column[data-status="doing"] .kanban-column__list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+/* doing 컬럼 박스 */
+.kanban-column__doingBox {
+  width: 45vw;
+  height: 60vh;
+
+  display: flex;
+  flex-direction: row;
   gap: 2vh;
-  align-items: start;
+  align-items: flex-start;
+
+  background-color: #454545; /* 기존 list 배경을 박스로 올리고 싶으면 */
+}
+
+.kanban-column__doingBox .kanban-column__list {
+  height: 56vh;
+  flex: 1;
+  min-width: 0;
+
+  background-color: rgb(49, 177, 177);
+  overflow-x: auto;
+}
+
+.kanban-column__list.drag-over {
+  outline: 2px dashed rgba(255, 255, 255, 0.5);
+  outline-offset: 6px;
 }
 
 .kanban-lane {
