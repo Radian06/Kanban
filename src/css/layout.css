@@ -1,8 +1,17 @@
 /* 전체 레이아웃 (공통 container, header, footer) */
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+
+  background-color: #d3d3d3;
+}
+
 
 .layout-title {
   width: 100%;
-  height: 10vh;
+  height: 9vh;
+  scroll-padding: 1vh;
 
   display: flex;
   justify-content: center;
@@ -10,8 +19,8 @@
 
   font-size: 4vh;
   font-weight: bold;
-
-  background-color: aliceblue;
+  color: #ffd900;
+  background-color: #9a99a0;
 }
 
 .layout-nav {
@@ -23,7 +32,8 @@
   align-items: center;
   gap: 10vw;
 
-  background-color: antiquewhite;
+  color: #ececec;
+  background-color: #9a99a0;
 }
 
 .layout-subtitle {
@@ -44,5 +54,7 @@
   
   font-size: 2vh;
   font-weight: bold;
-  color: red;
+  color: #ffe75e;
+
+  cursor: pointer;
 }

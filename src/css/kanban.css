@@ -2,13 +2,14 @@
 .kanban-board {
   width: 76vw;
   height: 70vh;
-  padding: 2vh 2vw;
+  padding: 2vh 1vw;
   margin: 4vh auto;
 
   display: flex;
   justify-content: space-between;
 
-  background-color: beige;
+  background-color: #eeeeee;
+  border-radius: 4vh;
 }
 
 /* Column 스타일 */
@@ -19,7 +20,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: bisque;
+
+  background-color: #9a99a0;
+  color: white;
+  border-radius: 2vh;
 }
 
 .kanban-column__title {
@@ -46,7 +50,9 @@
   flex-direction: column;
   gap: 2vh;
 
-  background-color: #454545;
+  background-color: #aaaaaa;
+  border-radius: 0 0 2vh 2vh;
+  
 
   /* 스크롤 */
   overflow-y: auto;
@@ -69,7 +75,8 @@
   gap: 2vh;
   align-items: flex-start;
 
-  background-color: #454545; /* 기존 list 배경을 박스로 올리고 싶으면 */
+  background-color: #aaaaaa;
+  border-radius: 0 0 2vh 2vh;
 }
 
 .kanban-column__doingBox .kanban-column__list {
@@ -77,11 +84,11 @@
   flex: 1;
   min-width: 0;
 
-  background-color: rgb(49, 177, 177);
+  background-color: #aaaaaa;
 }
 
 .kanban-column__list.drag-over {
-  outline: 0.4vh dashed rgb(238, 255, 0);
+  outline: 0.4vh dashed #ffc400;
   outline-offset: 0.5vh;
 }
 
@@ -115,12 +122,15 @@
   flex-shrink: 0;
 
   display: flex;
+  justify-content: center;
   align-items: center;
 
-  background-color: antiquewhite;
+  background-color: #faf1d7;
   border-radius: 2vh;
+  color: #523800;
+  font-size: 1.8vh;
 }
 
 .task-card:hover {
-  background-color: aquamarine;
+  background-color: #e6daba;
 }
