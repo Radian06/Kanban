@@ -12,3 +12,17 @@ export const state = {
     { id: 10, title: "README 작성", status: "done" }
   ],
 };
+
+/**
+ * task 이동 함수
+ */
+export function moveTask(taskId, newStatus) {
+  const id = String(taskId);
+
+  state.tasks = state.tasks.map((t) =>
+    String(t.id) === id ? { ...t, status: newStatus } : t
+  );
+
+  // 화면 다시 그리기 트리거
+  document.dispatchEvent(new Event("kanban:change"));
+}

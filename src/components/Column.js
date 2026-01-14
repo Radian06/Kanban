@@ -1,4 +1,4 @@
-import { state } from "../state/store.js";
+import { state, moveTask } from "../state/store.js";
 import { renderTaskCard } from "./TaskCard.js";
 
 export function renderColumn(status, label) {
@@ -16,6 +16,22 @@ export function renderColumn(status, label) {
   state.tasks
     .filter((t) => t.status === status)
     .forEach((t) => list.appendChild(renderTaskCard(t)));
+
+  // drop 허용
+  column.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  });
+
+  // drop 처리
+  column.addEventListener("drop", (e) => {
+    e.preventDefault();
+
+    const taskId = e.dataTransfer.getData("text/plain");
+    if (!taskId) return;
+
+    moveTask(taskId, status);
+  })
 
   column.appendChild(header);
   column.appendChild(list);

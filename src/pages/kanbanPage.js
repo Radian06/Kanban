@@ -46,3 +46,17 @@ export function renderKanbanPage() {
   app.appendChild(nav);
   app.appendChild(board);
 }
+
+// 중복 렌더링 방지
+let subscribed = false;
+
+export function initKanbanPage() {
+  renderKanbanPage();
+
+  if (!subscribed) {
+    document.addEventListener("kanban:change", () => {
+      renderKanbanPage();
+    });
+    subscribed = true;
+  }
+}
