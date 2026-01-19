@@ -1,5 +1,6 @@
 import { renderColumn } from "../components/Column.js";
 import { createClock } from "../components/Clock.js";
+import { openModal, closeModal, initModal } from "../components/Modal.js";
 
 export function renderKanbanPage() {
   const app = document.getElementById("app");
@@ -31,6 +32,38 @@ export function renderKanbanPage() {
   addBtn.className = "layout-subtitle";
   addBtn.textContent = "할 일 추가";
 
+  // 모달 열기
+  addBtn.addEventListener("click", () => {
+    openModal({
+      title: "할 일 추가",
+      body: `
+        <label>
+          제목
+          <input id="taskTitle" class="modal-input" placeholder="예: 로그인 버그 수정" />
+        </label>
+      `,
+      footer: `
+        <button class="modal-btn" id="cancelAdd">취소</button>
+        <button class="modal-btn primary" id="confirmAdd">추가</button>
+      `,
+      onOpen: (overlay) => {
+        const titleInput = overlay.querySelector("#taskTitle");
+        titleInput.focus();
+
+        overlay.querySelector("#cancelAdd").addEventListener("click", closeModal);
+
+        overlay.querySelector("#confirmAdd").addEventListener("click", () => {
+          const title = titleInput.value.trim();
+          if (!title) return alert("제목을 입력해줘!");
+
+          document.dispatchEvent(new CustomEvent("kanban:change"));
+
+          closeModal();
+        });
+      },
+    });
+  });
+
   nav.appendChild(timeSlot);
   nav.appendChild(subtitle);
   nav.appendChild(addBtn);
@@ -51,6 +84,9 @@ export function renderKanbanPage() {
 let subscribed = false;
 
 export function initKanbanPage() {
+  // 모달 DOM 1회 생성
+  initModal();
+
   renderKanbanPage();
 
   if (!subscribed) {
