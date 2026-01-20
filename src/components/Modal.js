@@ -1,4 +1,5 @@
 let overlay = null;
+let submitHandler = null;
 
 export function initModal() {
   if (overlay) return;
@@ -24,7 +25,29 @@ export function initModal() {
         ></textarea>
       </div>
 
-      <div class="modal-footer" id="modalFooter"></div>
+      <div class="modal-footer" id="modalFooter">
+        <div class="modal-footer-left">
+          <label class="modal-radio">
+            <input type="radio" name="status" value="todo" checked />
+            <span>To Do</span>
+          </label>
+
+          <label class="modal-radio">
+            <input type="radio" name="status" value="doing" />
+            <span>Doing</span>
+          </label>
+
+          <label class="modal-radio">
+            <input type="radio" name="status" value="done" />
+            <span>Done</span>
+          </label>
+        </div>
+
+        <div class="modal-footer-right">
+          <button class="modal-btn" id="cancelAdd">취소</button>
+          <button class="modal-btn primary" id="confirmAdd">추가</button>
+        </div>
+      </div>
     </div>
   `;
 
@@ -42,9 +65,39 @@ export function initModal() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeModal();
   });
+
+  // 취소 버튼 닫기
+  overlay.querySelector("#cancelAdd").addEventListener("click", closeModal);
+
+  // 추가 버튼 동작
+  overlay.querySelector("#confirmAdd").addEventListener("click", () => {
+    const titleInput = overlay.querySelector("#modalTitleInput");
+    const bodyInput = overlay.querySelector("#modalBodyInput");
+    const statusEl = overlay.querySelector('input[name="status"]:checked');
+    const status = statusEl ? statusEl.value : "todo";
+
+    const title = titleInput.value.trim();
+    const body = bodyInput.value.trim();
+
+    if (!title) return alert("제목은 필수야!");
+
+    // 외부에서 넘긴 submitHandler가 있으면 호출
+    if (typeof submitHandler === "function") {
+      submitHandler({ title, body, status });
+    }
+
+    closeModal();
+  });
 }
 
-export function openModal({ title = "", body = "", footer = "", onOpen } = {}) {
+export function openModal({
+  title = "",
+  body = "",
+  status = "todo",
+  footer = null,
+  onOpen,
+  onSubmit,
+} = {}) {
   initModal();
 
   // input / textarea에 초기값 세팅
@@ -54,7 +107,17 @@ export function openModal({ title = "", body = "", footer = "", onOpen } = {}) {
   titleInput.value = title;
   bodyInput.value = body;
 
-  overlay.querySelector("#modalFooter").innerHTML = footer;
+  // 라디오 기본 선택 세팅
+  const radio = overlay.querySelector(`input[name="status"][value="${status}"]`);
+  if (radio) radio.checked = true;
+
+  // footer가 들어온 경우에만 덮어쓰기 (안 주면 기본 footer 유지)
+  if (typeof footer === "string") {
+    overlay.querySelector("#modalFooter").innerHTML = footer;
+  }
+
+  // submit 콜백 저장
+  submitHandler = typeof onSubmit === "function" ? onSubmit : null;
 
   overlay.classList.remove("hidden");
   document.body.style.overflow = "hidden";
