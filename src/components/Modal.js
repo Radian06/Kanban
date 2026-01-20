@@ -8,11 +8,21 @@ export function initModal() {
   overlay.innerHTML = `
     <div class="modal" role="dialog" aria-modal="true">
       <div class="modal-header">
-        <h2 class="modal-title" id="modalTitle"></h2>
+        <input
+          id="modalTitleInput"
+          class="modal-title-input"
+          placeholder="제목을 입력하세요"
+        />
         <button class="modal-close" type="button" aria-label="닫기">✕</button>
       </div>
 
-      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-body">
+        <textarea
+          id="modalBodyInput"
+          class="modal-body-input"
+          placeholder="내용을 입력하세요"
+        ></textarea>
+      </div>
 
       <div class="modal-footer" id="modalFooter"></div>
     </div>
@@ -37,14 +47,28 @@ export function initModal() {
 export function openModal({ title = "", body = "", footer = "", onOpen } = {}) {
   initModal();
 
-  overlay.querySelector("#modalTitle").textContent = title;
-  overlay.querySelector("#modalBody").innerHTML = body;
+  // input / textarea에 초기값 세팅
+  const titleInput = overlay.querySelector("#modalTitleInput");
+  const bodyInput = overlay.querySelector("#modalBodyInput");
+
+  titleInput.value = title;
+  bodyInput.value = body;
+
   overlay.querySelector("#modalFooter").innerHTML = footer;
 
   overlay.classList.remove("hidden");
   document.body.style.overflow = "hidden";
 
-  if (typeof onOpen === "function") onOpen(overlay);
+  // 자동 포커스
+  titleInput.focus();
+
+  if (typeof onOpen === "function") {
+    onOpen({
+      overlay,
+      titleInput,
+      bodyInput,
+    });
+  }
 }
 
 export function closeModal() {
