@@ -1,6 +1,6 @@
 import { renderColumn } from "../components/Column.js";
 import { createClock } from "../components/Clock.js";
-import { openModal, closeModal, initModal } from "../components/Modal.js";
+import { openModal, initModal } from "../components/Modal.js";
 
 export function renderKanbanPage() {
   const app = document.getElementById("app");
@@ -35,27 +35,9 @@ export function renderKanbanPage() {
   // 모달 열기
   addBtn.addEventListener("click", () => {
     openModal({
-      footer: `
-        <button class="modal-btn" id="cancelAdd">취소</button>
-        <button class="modal-btn primary" id="confirmAdd">추가</button>
-      `,
-      onOpen: ({ titleInput, bodyInput }) => {
-        document
-          .getElementById("cancelAdd")
-          .addEventListener("click", closeModal);
-
-        document.getElementById("confirmAdd").addEventListener("click", () => {
-          const title = titleInput.value.trim();
-          const body = bodyInput.value.trim();
-
-          if (!title) return alert("제목은 필수야!");
-
-          // 나중에 여기에 store에 저장
-          // addTask({ title, description: body, status: "todo" });
-
-          document.dispatchEvent(new CustomEvent("kanban:change"));
-          closeModal();
-        });
+      onSubmit: ({ title, body, status }) => {
+        // addTask({ title, description: body, status });
+        document.dispatchEvent(new CustomEvent("kanban:change"));
       },
     });
   });
