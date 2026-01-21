@@ -1,6 +1,7 @@
 import { renderColumn } from "../components/Column.js";
 import { createClock } from "../components/Clock.js";
 import { openModal, initModal } from "../components/Modal.js";
+import { addTask } from "../state/store.js";
 
 export function renderKanbanPage() {
   const app = document.getElementById("app");
@@ -36,11 +37,11 @@ export function renderKanbanPage() {
   addBtn.addEventListener("click", () => {
     openModal({
       onSubmit: ({ title, body, status }) => {
-        // addTask({ title, description: body, status });
-        document.dispatchEvent(new CustomEvent("kanban:change"));
+        addTask({ title, body, status });
       },
     });
   });
+
 
   nav.appendChild(timeSlot);
   nav.appendChild(subtitle);

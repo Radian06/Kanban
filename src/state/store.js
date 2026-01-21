@@ -1,15 +1,6 @@
 export const state = {
   tasks: [
-    { id: 1, title: "1 UI 만들기", status: "todo", order: 0 },
-    { id: 2, title: "2 컬럼 레이아웃", status: "doing", order: 0 },
-    { id: 3, title: "3 앤 드롭 조사", status: "doing", order: 1 },
-    { id: 4, title: "4 정리", status: "doing", order: 2 },
-    { id: 5, title: "5 작성", status: "done", order: 0 },
-    { id: 6, title: "6 UI 만들기", status: "todo", order: 0 },
-    { id: 7, title: "7 컬럼 레이아웃", status: "doing", order: 0 },
-    { id: 8, title: "8 앤 드롭 조사", status: "doing", order: 1 },
-    { id: 9, title: "9 정리", status: "doing", order: 2 },
-    { id: 10, title: "10 작성", status: "done", order: 0 },
+
   ],
 };
 
@@ -25,9 +16,7 @@ function normalizeGroup(status, lane) {
 }
 
 /**
- * moveTask(taskId, newStatus, insertIndex, newLane?)
- * - todo/done: newLane 무시
- * - doing: newLane 필수(0~2). 없으면 기존 lane 유지(없으면 0)
+ * TaskCard 이동
  */
 export function moveTask(taskId, newStatus, insertIndex, newLane) {
   const task = state.tasks.find((t) => String(t.id) === String(taskId));
@@ -71,5 +60,38 @@ export function moveTask(taskId, newStatus, insertIndex, newLane) {
   // 이전 그룹도 다시 정리
   normalizeGroup(prevStatus, prevLane);
 
+  document.dispatchEvent(new Event("kanban:change"));
+}
+
+/**
+ * TaskCard 추가
+ */
+export function addTask({ title, body = "", status = "todo" }) {
+  const safeStatus = ["todo", "doing", "done"].includes(status) ? status : "todo";
+
+  // 같은 상태 그룹에서 가장 마지막 order를 찾아 뒤에 붙이기
+  const group = state.tasks
+    .filter((t) => t.status === safeStatus && (safeStatus !== "doing" || (t.lane ?? 0) === 0))
+    .sort((a, b) => a.order - b.order);
+
+  const nextOrder = group.length;
+
+  const newTask = {
+    id: Date.now(),
+    title,
+    body,
+    status: safeStatus,
+    order: nextOrder,
+  };
+
+  // doing일 경우 lane이 필요하면 기본 lane 0 넣기
+  if (safeStatus === "doing") newTask.lane = 0;
+
+  state.tasks.push(newTask);
+
+  // 그룹 정렬/정규화
+  normalizeGroup(safeStatus, newTask.lane ?? 0);
+
+  // 렌더 트리거
   document.dispatchEvent(new Event("kanban:change"));
 }
