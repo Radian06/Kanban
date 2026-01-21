@@ -95,3 +95,22 @@ export function addTask({ title, body = "", status = "todo" }) {
   // 렌더 트리거
   document.dispatchEvent(new Event("kanban:change"));
 }
+
+/**
+ * TaskCard 업데이트
+ */
+export function updateTask(taskId, { title, body, status }) {
+  const task = state.tasks.find((t) => String(t.id) === String(taskId));
+  if (!task) return;
+
+  if (typeof title === "string") task.title = title;
+  if (typeof body === "string") task.body = body;
+
+  if (typeof status === "string" && task.status !== status) {
+    const targetIndex = state.tasks.filter((t) => t.status === status).length;
+    moveTask(taskId, status, targetIndex, 0);
+    return; 
+  }
+
+  document.dispatchEvent(new Event("kanban:change"));
+}

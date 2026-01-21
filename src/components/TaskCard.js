@@ -6,6 +6,8 @@ export function renderTaskCard(task) {
   card.dataset.taskId = String(task.id);
   card.textContent = task.title;
 
+  
+
   card.addEventListener("dragstart", (e) => {
     e.dataTransfer.setData("text/plain", String(task.id));
     e.dataTransfer.effectAllowed = "move";
